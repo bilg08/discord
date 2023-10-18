@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Dialog,
   DialogContent,
@@ -8,9 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useForm } from "react-hook-form";
+import useModal from "@/hooks/use-modal-store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
+import FileUpload from "../file-upload";
+import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
@@ -20,11 +23,6 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
-import FileUpload from "../file-upload";
-import axios from "axios";
-import { useRouter } from "next/navigation";
 const formSchema = z.object({
   name: z.string().min(1, {
     message: "Server name is required",
@@ -33,13 +31,10 @@ const formSchema = z.object({
     message: "Server image is required",
   }),
 });
-const InitialModal = () => {
-  const [isMounted, setIsMounted] = useState(false);
+const CreateServerModal = () => {
   const router = useRouter();
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+  const {type, onClose, isOpen} = useModal();
+  const isModalOpen = type === 'createServer' && isOpen;
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,13 +49,17 @@ const InitialModal = () => {
       await axios.post("/api/servers/", values);
       form.reset();
       router.refresh();
+      onClose()
     } catch (error) {
       console.log("ERROR: ", error);
     }
   };
-  if (!isMounted) return null;
+  const handleClose = () => {
+    onClose();
+    form.reset();
+  }
   return (
-    <Dialog open>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-dark p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold text-zinc-800">
@@ -125,4 +124,4 @@ const InitialModal = () => {
   );
 };
 
-export default InitialModal;
+export default CreateServerModal;
