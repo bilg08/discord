@@ -32,7 +32,7 @@ const ServerHeader = ({ server, role }: Props) => {
             </DropdownMenuItem>
         )}
         {isModerator && (
-            <DropdownMenuItem className="text-indigo-600 dark:text-indigo-400 px-3 py-2 text-sm cursor-pointer">
+            <DropdownMenuItem onClick={() => onOpen('editServer', {server})} className="text-indigo-600 dark:text-indigo-400 px-3 py-2 text-sm cursor-pointer">
                 Server settings
                 <Settings className="w-4 h-4 ml-auto"/>
             </DropdownMenuItem>

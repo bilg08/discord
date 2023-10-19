@@ -15,7 +15,7 @@ import axios from "axios";
 
 const InviteModal = () => {
   const { type, onClose, isOpen, data, onOpen } = useModal();
-  const { server } = data;
+  const server = data?.server
   const isModalOpen = type === "invite" && isOpen;
   const origin = useOrigin();
   const [copied, setCopied] = useState(false);
@@ -39,13 +39,15 @@ const InviteModal = () => {
   const onNew = async () => {
     try {
         const response = await axios.patch(`/api/servers/${server?.id}/invite-code`);
-        onOpen('invite', {server: response.data});
+        onOpen('invite', {server: response?.data});
     } catch (error) {
         return
     } finally {
         setLoading(false);
     }
   }
+
+
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-dark p-0 overflow-hidden">
