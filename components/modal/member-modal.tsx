@@ -68,6 +68,23 @@ const MemberModal = () => {
     }
   };
 
+  const onKick = async (memnberId: string) => {
+    try {
+      setLoadingId(memnberId);
+      const url = qs.stringifyUrl({
+        url: `/api/members/${memnberId}`,
+        query: {
+          serverId: server.id
+        }
+      });
+      const resp = await axios.delete(url);
+      router.refresh();
+      onOpen('manageMembers', {server: resp.data});
+      console.log(url)
+    } catch (error) {
+      
+    }
+  };
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white text-dark overflow-hidden">
@@ -92,7 +109,7 @@ const MemberModal = () => {
                   {member?.profile?.email}
                 </p>
               </div>
-              {/* {server.profileId !== member?.profileId && ( */}
+              {server.profileId !== member?.profileId && (
               <div className="ml-auto">
                 <DropdownMenu>
                   <DropdownMenuTrigger>
@@ -109,25 +126,29 @@ const MemberModal = () => {
                           <DropdownMenuItem onClick={() => onRoleChange(member.id, 'GUEST')}>
                             <Shield className="h-4 w-4 mr-2" />
                             Guest
+                            {member.role === 'GUEST' && (
                             <Check className="h-4 w-4 ml-auto" />
+                            )}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => onRoleChange(member.id, "MODERATOR")}>
                             <Shield className="h-4 w-4 mr-2" />
                             Moderator
+                            {member.role === 'MODERATOR' && (
                             <Check className="h-4 w-4 ml-auto" />
+                            )}
                           </DropdownMenuItem>
                         </DropdownMenuSubContent>
                       </DropdownMenuPortal>
                     </DropdownMenuSub>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onKick(member.id)}>
                       <Gavel className="h-4 w-4 mr-2" />
                       Kick
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              {/* )} */}
+               )}
               {loadingId == member.id && (
                 <Loader2 className="animate-spin text-zinc-500 ml-auto w-4 h-4"/>
               )}
